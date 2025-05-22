@@ -1,3 +1,4 @@
+
 # 💰 FinanceGuard
 
 **FinanceGuard** é uma aplicação web full-stack desenvolvida para ajudar pessoas a **gerenciarem suas finanças pessoais de forma simples, gratuita e segura**.  
@@ -114,3 +115,4 @@ Sinta-se à vontade para abrir **issues**, sugerir **melhorias** ou enviar um **
 ---
 
 > Desenvolvido com 💙 por Saul Alves
+
