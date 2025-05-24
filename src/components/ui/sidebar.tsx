@@ -27,7 +27,7 @@ const SIDEBAR_WIDTH_MOBILE = "18rem"
 const SIDEBAR_WIDTH_ICON = "3rem"
 const SIDEBAR_KEYBOARD_SHORTCUT = "b"
 
-type SidebarContext = {
+type SidebarContextValue = {
   state: "expanded" | "collapsed"
   open: boolean
   setOpen: (open: boolean) => void
@@ -37,7 +37,7 @@ type SidebarContext = {
   toggleSidebar: () => void
 }
 
-const SidebarContext = React.createContext<SidebarContext | null>(null)
+const SidebarContext = React.createContext<SidebarContextValue | null>(null)
 
 function useSidebar() {
   const context = React.useContext(SidebarContext)
@@ -68,7 +68,7 @@ const SidebarProvider = React.forwardRef<
     },
     ref
   ) => {
-    const hookIsMobile = useIsMobile(); // Raw value from the hook
+    const hookIsMobile = useIsMobile();
     const [openMobile, setOpenMobile] = React.useState(false);
     const [mounted, setMounted] = React.useState(false);
 
@@ -76,16 +76,23 @@ const SidebarProvider = React.forwardRef<
       setMounted(true);
     }, []);
 
-    // Determine `isMobile` based on mounted state to ensure consistency SSR vs Client initial render
-    // On server and initial client render, `mounted` is false, so `isMobile` will be effectively false (desktop-first)
-    // After mount, `mounted` is true, and `hookIsMobile` (from `useIsMobile`) determines the value.
     const isMobile = mounted ? hookIsMobile : false;
 
+    const [_open, _setOpen] = React.useState(() => {
+      if (typeof document !== 'undefined') {
+        const cookieValue = document.cookie
+          .split("; ")
+          .find((row) => row.startsWith(`${SIDEBAR_COOKIE_NAME}=`))
+          ?.split("=")[1]
+        if (cookieValue) {
+          return cookieValue === "true"
+        }
+      }
+      return defaultOpen
+    })
 
-    // This is the internal state of the sidebar.
-    // We use openProp and setOpenProp for control from outside the component.
-    const [_open, _setOpen] = React.useState(defaultOpen)
     const open = openProp ?? _open
+    
     const setOpen = React.useCallback(
       (value: boolean | ((value: boolean) => boolean)) => {
         const openState = typeof value === "function" ? value(open) : value
@@ -94,25 +101,19 @@ const SidebarProvider = React.forwardRef<
         } else {
           _setOpen(openState)
         }
-
-        // This sets the cookie to keep the sidebar state.
         if (typeof document !== 'undefined') {
-            document.cookie = `${SIDEBAR_COOKIE_NAME}=${openState}; path=/; max-age=${SIDEBAR_COOKIE_MAX_AGE}`
+          document.cookie = `${SIDEBAR_COOKIE_NAME}=${openState}; path=/; max-age=${SIDEBAR_COOKIE_MAX_AGE}`
         }
       },
       [setOpenProp, open]
     )
 
-    // Helper to toggle the sidebar.
     const toggleSidebar = React.useCallback(() => {
-      // Use `hookIsMobile` for the actual device check when toggling,
-      // but the context `isMobile` will control structural rendering based on `mounted`.
-      return hookIsMobile
+      return hookIsMobile // Use hookIsMobile for actual device check
         ? setOpenMobile((currentOpen) => !currentOpen)
         : setOpen((currentOpen) => !currentOpen)
     }, [hookIsMobile, setOpen, setOpenMobile])
 
-    // Adds a keyboard shortcut to toggle the sidebar.
     React.useEffect(() => {
       const handleKeyDown = (event: KeyboardEvent) => {
         if (
@@ -129,16 +130,14 @@ const SidebarProvider = React.forwardRef<
       }
     }, [toggleSidebar])
 
-    // We add a state so that we can do data-state="expanded" or "collapsed".
-    // This makes it easier to style the sidebar with Tailwind classes.
     const state = open ? "expanded" : "collapsed"
 
-    const contextValue = React.useMemo<SidebarContext>(
+    const contextValue = React.useMemo<SidebarContextValue>(
       () => ({
         state,
         open,
         setOpen,
-        isMobile, // Use the mounted-aware isMobile
+        isMobile,
         openMobile,
         setOpenMobile,
         toggleSidebar,
@@ -173,14 +172,13 @@ const SidebarProvider = React.forwardRef<
 )
 SidebarProvider.displayName = "SidebarProvider"
 
-const Sidebar = React.forwardRef<
-  HTMLDivElement,
-  React.ComponentProps<"div"> & {
-    side?: "left" | "right"
-    variant?: "sidebar" | "floating" | "inset"
-    collapsible?: "offcanvas" | "icon" | "none"
-  }
->(
+interface SidebarProps extends React.ComponentProps<"div"> {
+  side?: "left" | "right"
+  variant?: "sidebar" | "floating" | "inset"
+  collapsible?: "offcanvas" | "icon" | "none"
+}
+
+const Sidebar = React.forwardRef<HTMLDivElement, SidebarProps>(
   (
     {
       side = "left",
@@ -188,7 +186,7 @@ const Sidebar = React.forwardRef<
       collapsible = "offcanvas",
       className,
       children,
-      ...props // These are HTML attributes for the root element
+      ...restHtmlProps // Changed from 'props' to 'restHtmlProps' for clarity
     },
     ref
   ) => {
@@ -201,36 +199,39 @@ const Sidebar = React.forwardRef<
 
     const currentIsMobile = mounted ? contextIsMobile : false;
 
-
     if (collapsible === "none") {
       return (
         <div
           ref={ref}
           className={cn(
             "flex h-full w-[--sidebar-width] flex-col bg-sidebar text-sidebar-foreground",
-            className
+            className // Apply className from props
           )}
-          {...props}
+          {...restHtmlProps} // Spread other HTML attributes
         >
           {children}
         </div>
       )
     }
 
-    // If currentIsMobile is true (client-side, after mount)
     if (currentIsMobile) {
       return (
-        <Sheet open={openMobile} onOpenChange={setOpenMobile} {...props}>
+        <Sheet open={openMobile} onOpenChange={setOpenMobile}>
           <SheetContent
             data-sidebar="sidebar"
             data-mobile="true"
-            className="w-[--sidebar-width] bg-sidebar p-0 text-sidebar-foreground [&>button]:hidden"
+            className={cn(
+              "w-[--sidebar-width] bg-sidebar p-0 text-sidebar-foreground [&>button]:hidden",
+               // className from props is not directly applicable here as SheetContent has its own styling structure.
+               // If specific styling is needed for SheetContent, it might need a dedicated prop or context.
+            )}
             style={
               {
                 "--sidebar-width": SIDEBAR_WIDTH_MOBILE,
               } as React.CSSProperties
             }
             side={side}
+            // {...restHtmlProps} // Spreading arbitrary props to SheetContent might be problematic
           >
             <div className="flex h-full w-full flex-col">{children}</div>
           </SheetContent>
@@ -238,28 +239,16 @@ const Sidebar = React.forwardRef<
       )
     }
     
-    // Desktop version (rendered on server, and on client before/after mount if not mobile)
     return (
       <div
         ref={ref}
-        className={cn("group peer hidden md:block text-sidebar-foreground", props.className)} // Apply props.className to the root
+        className={cn("group peer hidden md:block text-sidebar-foreground", className)} // Apply className from props
         data-state={state}
         data-collapsible={state === "collapsed" ? collapsible : ""}
         data-variant={variant}
         data-side={side}
-        style={props.style} // Apply props.style to the root
-        id={props.id} // Apply props.id to the root
-        // Spread other DOM props passed via ...props, filtering out non-DOM ones if necessary
-        // For simplicity, assuming props contains only valid DOM attributes for a div here
-        {...Object.entries(props).reduce((acc, [key, value]) => {
-          if (!['className', 'style', 'id', 'children', 'side', 'variant', 'collapsible'].includes(key)) {
-            // @ts-ignore
-            acc[key] = value;
-          }
-          return acc;
-        }, {})}
+        {...restHtmlProps} // Spread other HTML attributes like style, id, etc.
       >
-        {/* This is what handles the sidebar gap on desktop */}
         <div
           className={cn(
             "duration-200 relative h-svh w-[--sidebar-width] bg-transparent transition-[width] ease-linear",
@@ -271,9 +260,6 @@ const Sidebar = React.forwardRef<
           )}
         />
         <div
-          // The className prop from Sidebar's arguments was originally applied here.
-          // It has been moved to the outer div. If specific styling is needed for this inner fixed container,
-          // it should be managed internally or via a more specific prop.
           className={cn(
             "duration-200 fixed inset-y-0 z-10 hidden h-svh w-[--sidebar-width] transition-[left,right,width] ease-linear md:flex",
             side === "left"
@@ -282,7 +268,6 @@ const Sidebar = React.forwardRef<
             variant === "floating" || variant === "inset"
               ? "p-2 group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)_+_theme(spacing.4)_+2px)]"
               : "group-data-[collapsible=icon]:w-[--sidebar-width-icon] group-data-[side=left]:border-r group-data-[side=right]:border-l"
-            // Removed `className` from here as it's now applied to the root div
           )}
         >
           <div
@@ -596,7 +581,7 @@ const SidebarMenuButton = React.forwardRef<
     ref
   ) => {
     const Comp = asChild ? Slot : "button"
-    const { isMobile: contextIsMobile, state } = useSidebar() // Use contextIsMobile which is mounted-aware
+    const { isMobile: contextIsMobile, state } = useSidebar() 
 
     const button = (
       <Comp
@@ -625,7 +610,6 @@ const SidebarMenuButton = React.forwardRef<
         <TooltipContent
           side="right"
           align="center"
-          // Use contextIsMobile for visibility decision
           hidden={state !== "collapsed" || contextIsMobile} 
           {...tooltip}
         />
