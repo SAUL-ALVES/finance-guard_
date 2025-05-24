@@ -36,6 +36,7 @@ import {
   Sun,
   Github,
   Lightbulb,
+  Loader2, // Added Loader2
 } from 'lucide-react';
 
 export const Icons = {
@@ -76,6 +77,7 @@ export const Icons = {
   Sun,
   Github,
   Lightbulb,
+  Loader2, // Added Loader2
   FinanceGuardLogo: (props: React.SVGProps<SVGSVGElement>) => (
     <svg
       xmlns="http://www.w3.org/2000/svg"
