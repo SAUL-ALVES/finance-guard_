@@ -30,7 +30,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <SidebarProvider defaultOpen>
-      <Sidebar collapsible="icon" variant="sidebar" side="left">
+      <Sidebar collapsible="icon" variant="inset" side="left">
         <SidebarHeader className="p-4">
           <Link href="/" className="flex items-center gap-2 text-lg font-semibold text-primary">
             <Icons.FinanceGuardLogo className="h-8 w-8" />
