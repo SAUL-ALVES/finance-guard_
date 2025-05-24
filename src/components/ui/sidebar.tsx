@@ -76,7 +76,7 @@ const SidebarProvider = React.forwardRef<
       setMounted(true);
     }, []);
 
-    const isMobile = mounted ? hookIsMobile : false;
+    const isMobileContextValue = mounted ? hookIsMobile : false;
 
     const [_open, _setOpen] = React.useState(() => {
       if (typeof document !== 'undefined') {
@@ -105,11 +105,11 @@ const SidebarProvider = React.forwardRef<
           document.cookie = `${SIDEBAR_COOKIE_NAME}=${openState}; path=/; max-age=${SIDEBAR_COOKIE_MAX_AGE}`
         }
       },
-      [setOpenProp, open]
+      [setOpenProp, open, _setOpen]
     )
 
     const toggleSidebar = React.useCallback(() => {
-      return hookIsMobile // Use hookIsMobile for actual device check
+      return hookIsMobile 
         ? setOpenMobile((currentOpen) => !currentOpen)
         : setOpen((currentOpen) => !currentOpen)
     }, [hookIsMobile, setOpen, setOpenMobile])
@@ -137,12 +137,12 @@ const SidebarProvider = React.forwardRef<
         state,
         open,
         setOpen,
-        isMobile,
+        isMobile: isMobileContextValue,
         openMobile,
         setOpenMobile,
         toggleSidebar,
       }),
-      [state, open, setOpen, isMobile, openMobile, setOpenMobile, toggleSidebar]
+      [state, open, setOpen, isMobileContextValue, openMobile, setOpenMobile, toggleSidebar]
     )
 
     return (
@@ -186,15 +186,15 @@ const Sidebar = React.forwardRef<HTMLDivElement, SidebarProps>(
       collapsible = "offcanvas",
       className,
       children,
-      ...restHtmlProps // Changed from 'props' to 'restHtmlProps' for clarity
+      ...restHtmlProps
     },
     ref
   ) => {
     const { isMobile: contextIsMobile, state, openMobile, setOpenMobile } = useSidebar();
-    const [mounted, setMounted] = React.useState(false);
+    const [mounted, setMountedLocal] = React.useState(false);
 
     React.useEffect(() => {
-      setMounted(true);
+      setMountedLocal(true);
     }, []);
 
     const currentIsMobile = mounted ? contextIsMobile : false;
@@ -205,9 +205,9 @@ const Sidebar = React.forwardRef<HTMLDivElement, SidebarProps>(
           ref={ref}
           className={cn(
             "flex h-full w-[--sidebar-width] flex-col bg-sidebar text-sidebar-foreground",
-            className // Apply className from props
+            className
           )}
-          {...restHtmlProps} // Spread other HTML attributes
+          {...restHtmlProps}
         >
           {children}
         </div>
@@ -222,8 +222,6 @@ const Sidebar = React.forwardRef<HTMLDivElement, SidebarProps>(
             data-mobile="true"
             className={cn(
               "w-[--sidebar-width] bg-sidebar p-0 text-sidebar-foreground [&>button]:hidden",
-               // className from props is not directly applicable here as SheetContent has its own styling structure.
-               // If specific styling is needed for SheetContent, it might need a dedicated prop or context.
             )}
             style={
               {
@@ -231,7 +229,6 @@ const Sidebar = React.forwardRef<HTMLDivElement, SidebarProps>(
               } as React.CSSProperties
             }
             side={side}
-            // {...restHtmlProps} // Spreading arbitrary props to SheetContent might be problematic
           >
             <div className="flex h-full w-full flex-col">{children}</div>
           </SheetContent>
@@ -239,15 +236,39 @@ const Sidebar = React.forwardRef<HTMLDivElement, SidebarProps>(
       )
     }
     
+    // Desktop version: Render placeholder if not mounted, full version if mounted.
+    if (!mounted) {
+      // Render a minimal placeholder for server and initial client render
+      // This helps avoid hydration mismatch for complex desktop sidebar structure.
+      // Basic attributes like data-state and data-side can be kept if they are stable.
+      return (
+        <div
+          ref={ref}
+          className={cn("group peer hidden md:block text-sidebar-foreground", className)}
+          data-state={state} // 'state' should be stable from context for initial render
+          data-side={side}   // 'side' is a direct prop
+          // Avoid 'data-variant' and 'data-collapsible' on placeholder if they cause issues
+          {...restHtmlProps} // Spread other stable HTML attributes
+        >
+           {/* Placeholder for the two inner divs to maintain structure somewhat */}
+           <div className="duration-200 relative h-svh w-[--sidebar-width] bg-transparent transition-[width] ease-linear" />
+           <div className="duration-200 fixed inset-y-0 z-10 hidden h-svh w-[--sidebar-width] transition-[left,right,width] ease-linear md:flex">
+            {/* Intentionally empty or minimal content for placeholder */}
+           </div>
+        </div>
+      );
+    }
+
+    // Full desktop version, rendered only after client-side mount
     return (
       <div
         ref={ref}
-        className={cn("group peer hidden md:block text-sidebar-foreground", className)} // Apply className from props
+        className={cn("group peer hidden md:block text-sidebar-foreground", className)}
         data-state={state}
         data-collapsible={state === "collapsed" ? collapsible : ""}
         data-variant={variant}
         data-side={side}
-        {...restHtmlProps} // Spread other HTML attributes like style, id, etc.
+        {...restHtmlProps} 
       >
         <div
           className={cn(
@@ -788,5 +809,3 @@ export {
   SidebarTrigger,
   useSidebar,
 }
-
-    
