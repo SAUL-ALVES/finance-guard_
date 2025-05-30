@@ -113,4 +113,4 @@ Sinta-se à vontade para abrir **issues**, sugerir **melhorias** ou enviar um **
 
 ---
 
-> Desenvolvido com 💙 por [Seu Nome Aqui]
+> Desenvolvido com 💙 por Saul Alves
