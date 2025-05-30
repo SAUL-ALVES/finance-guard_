@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useMemo } from 'react';
+import React, { useMemo, useEffect, useState } from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card";
 import { useTransactions } from '@/contexts/TransactionsContext';
@@ -52,6 +52,21 @@ export function ExpensesByCategoryChart() {
 
   }, [transactions, loading]);
 
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  // Determine outerRadius based on screen size
+  const outerRadius = useMemo(() => {
+    if (!isClient) return 120; // Default for server render
+    if (window.innerWidth < 768) { // Adjust breakpoint as needed for mobile
+      return 90;
+    }
+    return 120; // Default for larger screens
+  }, [isClient]);
+
   if (loading) {
     return (
       <Card className="shadow-lg col-span-1 md:col-span-2">
@@ -95,7 +110,7 @@ export function ExpensesByCategoryChart() {
               cy="50%"
               labelLine={false}
               label={renderCustomizedLabel}
-              outerRadius={120}
+ outerRadius={outerRadius}
               dataKey="value"
               nameKey="name"
             >
