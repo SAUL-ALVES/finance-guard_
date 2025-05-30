@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from 'next/link';
@@ -68,10 +69,10 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
       </Sidebar>
       <SidebarInset>
         <header className="sticky top-0 z-10 flex h-14 items-center gap-4 border-b bg-background/80 px-4 backdrop-blur-md sm:px-6 md:hidden">
-          <SidebarTrigger />
+          {pathname !== '/transactions' && <SidebarTrigger />}
           <Link href="/" className="flex items-center gap-2 text-lg font-semibold text-primary">
             <Icons.FinanceGuardLogo className="h-6 w-6" />
-            <span>FinanceGuard</span>
+            <span className={pathname === '/transactions' ? '' : 'ml-2'}>FinanceGuard</span>
           </Link>
         </header>
         <main className="flex-1 p-4 sm:p-6">{children}</main>
@@ -82,3 +83,5 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
     </SidebarProvider>
   );
 }
+
+    

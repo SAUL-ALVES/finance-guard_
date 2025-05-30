@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useMemo } from "react";
@@ -30,7 +31,7 @@ import { Icons } from "@/components/icons";
 import { formatDate } from "@/lib/utils";
 import type { Transaction, CategoryKey } from "@/types";
 import { CATEGORIES, CATEGORY_KEYS } from "@/config/categories";
-import { getColumns } from "./columns"; // Assuming columns.tsx is in the same directory
+import { getColumns } from "./columns";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useTransactions } from "@/contexts/TransactionsContext";
 
@@ -41,18 +42,16 @@ export function TransactionsTable() {
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [globalFilter, setGlobalFilter] = useState('');
 
-  // For Edit functionality (placeholder)
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
   const openEditSheet = (transaction: Transaction) => {
     setEditingTransaction(transaction);
-    // Logic to open an edit sheet/modal would go here
     console.log("Editing transaction:", transaction);
   };
   
   const columns = useMemo(() => getColumns(openEditSheet), []);
 
   const table = useReactTable({
-    data: transactions,
+    data: transactions, // This will be updated by filteredTransactions logic
     columns,
     state: {
       sorting,
@@ -87,7 +86,6 @@ export function TransactionsTable() {
       filtered = filtered.filter(t => new Date(t.date) >= filterStartDate);
     }
     if (filterEndDate) {
-      // Add 1 day to end date to make it inclusive
       const inclusiveEndDate = new Date(filterEndDate);
       inclusiveEndDate.setDate(inclusiveEndDate.getDate() + 1);
       filtered = filtered.filter(t => new Date(t.date) < inclusiveEndDate);
@@ -100,40 +98,41 @@ export function TransactionsTable() {
     }
     return filtered;
   }, [transactions, filterStartDate, filterEndDate, filterCategory, filterType]);
-
-  // Update table data when filters change
-  React.useEffect(() => {
-    table.setPageSize(10); // Reset page size or ensure it's set
-    // The table automatically uses 'transactions' which is now `filteredTransactions` via data prop
-  }, [filteredTransactions, table]);
   
-  // Use filteredTransactions for the table data
-  table.options.data = filteredTransactions;
+  // Update table data when filters change
+  // IMPORTANT: The table's data prop is implicitly updated because `useReactTable`
+  // re-runs its internal logic when its `data` option changes.
+  // We pass `filteredTransactions` to `table.options.data` to make this explicit.
+  React.useEffect(() => {
+    table.options.data = filteredTransactions;
+  }, [filteredTransactions, table]);
 
 
   if (loading) {
     return (
       <div className="space-y-4">
-        <div className="flex items-center justify-between gap-2">
-          <Skeleton className="h-10 w-1/3" />
-          <Skeleton className="h-10 w-24" />
+        <div className="flex flex-col md:flex-row items-center justify-between gap-2 p-4">
+          <Skeleton className="h-10 w-full md:w-1/3" />
+          <div className="flex flex-wrap items-center gap-2 w-full md:w-auto justify-start md:justify-end">
+            <Skeleton className="h-10 w-full sm:w-32" />
+            <Skeleton className="h-10 w-full sm:w-32" />
+            <Skeleton className="h-10 w-full sm:w-32" />
+            <Skeleton className="h-10 w-full sm:w-32" />
+          </div>
         </div>
-        <Skeleton className="h-10 w-full" />
         <div className="rounded-md border">
           <Table>
             <TableHeader>
-              {[...Array(5)].map((_, i) => (
-                <TableRow key={i}>
-                  {[...Array(columns.length)].map((_, j) => (
+                <TableRow>
+                  {columns.map((column, j) => (
                     <TableHead key={j}><Skeleton className="h-5 w-full" /></TableHead>
                   ))}
                 </TableRow>
-              ))}
             </TableHeader>
             <TableBody>
               {[...Array(5)].map((_, i) => (
                 <TableRow key={i}>
-                  {[...Array(columns.length)].map((_, j) => (
+                  {columns.map((_, j) => (
                     <TableCell key={j}><Skeleton className="h-5 w-full" /></TableCell>
                   ))}
                 </TableRow>
@@ -159,7 +158,7 @@ export function TransactionsTable() {
           onChange={(event) => setGlobalFilter(event.target.value)}
           className="max-w-sm w-full md:w-auto text-sm"
         />
-        <div className="flex flex-wrap items-center gap-2 w-full md:w-auto justify-center">
+        <div className="flex flex-wrap items-center gap-2 w-full md:w-auto justify-start md:justify-end">
             <Popover>
                 <PopoverTrigger asChild>
                     <Button variant="outline" className="w-full sm:w-auto text-sm">
@@ -283,3 +282,5 @@ export function TransactionsTable() {
     </div>
   );
 }
+
+    
