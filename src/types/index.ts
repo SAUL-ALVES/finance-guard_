@@ -4,7 +4,7 @@ export interface Category {
   key: CategoryKey;
   label: string;
   icon: React.ElementType;
-  color?: string; // Optional: for specific category color coding in charts if needed
+  color?: string; 
 }
 
 export interface Transaction {

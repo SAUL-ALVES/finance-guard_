@@ -1,7 +1,7 @@
-import type {NextConfig} from 'next';
+import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  // Configurações existentes
   typescript: {
     ignoreBuildErrors: true,
   },
@@ -18,6 +18,8 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+
+ 
 };
 
 export default nextConfig;

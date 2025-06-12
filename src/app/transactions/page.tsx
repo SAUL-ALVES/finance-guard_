@@ -6,7 +6,7 @@ import { AddTransactionSheet } from '@/components/transactions/AddTransactionShe
 
 export default function TransactionsPage() {
   return (
-    <>
+    <div className="p-4 space-y-4 sm:p-6 sm:space-y-6 max-w-screen-2xl mx-auto">
       <PageHeader 
         title="Transações" 
         description="Gerencie suas receitas e despesas."
@@ -14,6 +14,6 @@ export default function TransactionsPage() {
         <AddTransactionSheet />
       </PageHeader>
       <TransactionsTable />
-    </>
+    </div>
   );
 }
