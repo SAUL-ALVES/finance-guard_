@@ -1,4 +1,3 @@
-
 'use client';
 
 import Link from 'next/link';
@@ -33,9 +32,15 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
     <SidebarProvider defaultOpen>
       <Sidebar collapsible="icon" variant="inset" side="left">
         <SidebarHeader className="p-4">
-          <Link href="/" className="flex items-center gap-2 text-lg font-semibold text-primary">
-            <Icons.FinanceGuardLogo className="h-8 w-8" />
-            <span className="group-data-[collapsible=icon]:hidden">FinanceGuard</span>
+          {/* CORREÇÃO 1: Removido "legacyBehavior" e agrupado os filhos em um fragmento <> */}
+          <Link
+            href="/"
+            className="flex items-center gap-2 text-lg font-semibold text-primary"
+          >
+            <>
+              <Icons.FinanceGuardLogo className="h-8 w-8" />
+              <span className="group-data-[collapsible=icon]:hidden">FinanceGuard</span>
+            </>
           </Link>
         </SidebarHeader>
         <SidebarContent asChild>
@@ -43,18 +48,19 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
             <SidebarMenu>
               {navItems.map((item) => (
                 <SidebarMenuItem key={item.href}>
-                  <Link href={item.href} legacyBehavior passHref>
-                    <SidebarMenuButton
-                      asChild
-                      isActive={pathname === item.href}
-                      tooltip={{ children: item.label, className: "ml-2" }}
-                    >
-                      <a>
+                  {/* CORREÇÃO 2: A estrutura foi invertida. O Link agora é filho do botão. */}
+                  <SidebarMenuButton
+                    asChild
+                    isActive={pathname === item.href}
+                    tooltip={{ children: item.label, className: 'ml-2' }}
+                  >
+                    <Link href={item.href}>
+                      <>
                         <item.icon className="h-5 w-5" />
                         <span>{item.label}</span>
-                      </a>
-                    </SidebarMenuButton>
-                  </Link>
+                      </>
+                    </Link>
+                  </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
             </SidebarMenu>
@@ -70,9 +76,17 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
       <SidebarInset>
         <header className="sticky top-0 z-10 flex h-14 items-center gap-4 border-b bg-background/80 px-4 backdrop-blur-md sm:px-6 md:hidden">
           {pathname !== '/transactions' && <SidebarTrigger />}
-          <Link href="/" className="flex items-center gap-2 text-lg font-semibold text-primary">
-            <Icons.FinanceGuardLogo className="h-6 w-6" />
-            <span className={pathname === '/transactions' ? '' : 'ml-2'}>FinanceGuard</span>
+          {/* CORREÇÃO 3: Mesmo ajuste do primeiro link */}
+          <Link
+            href="/"
+            className="flex items-center gap-2 text-lg font-semibold text-primary"
+          >
+            <>
+              <Icons.FinanceGuardLogo className="h-6 w-6" />
+              <span className={pathname === '/transactions' ? '' : 'ml-2'}>
+                FinanceGuard
+              </span>
+            </>
           </Link>
         </header>
         <main className="flex-1 p-4 sm:p-6">{children}</main>
@@ -83,5 +97,3 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
     </SidebarProvider>
   );
 }
-
-    

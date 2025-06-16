@@ -1,23 +1,23 @@
-import type { Metadata } from 'next';
-import { Inter, Roboto_Mono } from 'next/font/google';
-import './globals.css';
-import { Providers } from '@/components/Providers';
-import AppShell from '@/components/AppShell';
+// src/app/layout.tsx
 
+import type { Metadata } from 'next';
+import { Inter, Roboto_Mono as RobotoMono } from 'next/font/google'; // Mantive suas fontes
+import './globals.css';
+
+// Suas configurações de fonte
 const inter = Inter({
   subsets: ['latin'],
   variable: '--font-inter',
 });
 
-const robotoMono = Roboto_Mono({
+const robotoMono = RobotoMono({
   subsets: ['latin'],
   variable: '--font-roboto-mono',
-  weight: ['400', '500', '700'] 
 });
 
 export const metadata: Metadata = {
-  title: 'FinanceGuard',
-  description: 'Sistema de Gestão Financeira Pessoal',
+  title: 'Finance Guard',
+  description: 'Seu app de finanças',
 };
 
 export default function RootLayout({
@@ -26,13 +26,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.variable} ${robotoMono.variable} antialiased font-sans min-h-screen bg-background text-foreground`}>
-        <Providers>
-          <AppShell>
-            {children}
-          </AppShell>
-        </Providers>
+    <html lang="pt-BR" suppressHydrationWarning>
+      <body
+        className={`${inter.variable} ${robotoMono.variable} antialiased font-sans min-h-screen bg-background text-foreground`}
+      >
+        {children} {/* Renderiza o filho diretamente, sem AppShell */}
       </body>
     </html>
   );
