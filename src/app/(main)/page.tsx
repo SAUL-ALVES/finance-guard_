@@ -1,3 +1,4 @@
+//src/app/(main)/page.tsx
 'use client';
 import { PageHeader } from '@/components/PageHeader';
 import { SummaryCard } from '@/components/dashboard/SummaryCard';
