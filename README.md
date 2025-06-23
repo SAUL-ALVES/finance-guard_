@@ -1,8 +1,3 @@
-
-
----
-
-```markdown
 # 🛡️ Finance Guard
 
 Sistema web para **gestão financeira pessoal**, com recursos de:
@@ -17,7 +12,6 @@ Sistema web para **gestão financeira pessoal**, com recursos de:
 ## 📂 Estrutura do Projeto
 
 ```
-
 finance-guard/
 ├── firebase/          # Cloud Functions e configs Firebase
 ├── src/               # Código-fonte Next.js
@@ -28,8 +22,7 @@ finance-guard/
 ├── next.config.ts
 ├── tailwind.config.ts
 └── package.json
-
-````
+```
 
 ---
 
@@ -44,7 +37,7 @@ finance-guard/
 
 ```bash
 npm install -g firebase-tools
-````
+```
 
 ---
 
@@ -133,17 +126,16 @@ npm start
 
 ## 📝 Tecnologias Principais
 
-* Next.js + TypeScript
-* Tailwind CSS
-* Firebase (Auth, Firestore, Hosting, Functions)
-* React Query, Zod, Radix UI, Recharts
-* Genkit AI (Google AI API)
+- Next.js + TypeScript  
+- Tailwind CSS  
+- Firebase (Auth, Firestore, Hosting, Functions)  
+- React Query, Zod, Radix UI, Recharts  
+- Genkit AI (Google AI API)
 
 ---
 
 ## ✅ Funcionalidades Futuras
 
-* Exportação de relatórios (CSV/PDF)
-* Notificações por e-mail
-* Modo offline com sincronização
-
+- Exportação de relatórios (CSV/PDF)  
+- Notificações por e-mail  
+- Modo offline com sincronização
