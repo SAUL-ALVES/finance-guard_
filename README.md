@@ -1,118 +1,149 @@
 
-# 💰 FinanceGuard
-
-**FinanceGuard** é uma aplicação web full-stack desenvolvida para ajudar pessoas a **gerenciarem suas finanças pessoais de forma simples, gratuita e segura**.  
-A ideia surgiu da dificuldade comum enfrentada por usuários que recorrem a planilhas manuais (propensas a erros) ou softwares pagos e complexos.  
-
-Nosso objetivo é criar uma **plataforma acessível e intuitiva**, com funcionalidades completas que qualquer pessoa possa usar — independentemente do seu nível técnico.
 
 ---
 
-## 📌 Problema Identificado
+```markdown
+# 🛡️ Finance Guard
 
-Muitos usuários enfrentam dificuldades para **gerenciar suas finanças pessoais** de forma eficiente, devido a:
+Sistema web para **gestão financeira pessoal**, com recursos de:
 
-- Planilhas manuais, sujeitas a erros e desorganização
-- Softwares pagos ou complexos que não atendem às necessidades básicas
-- Falta de visualização clara sobre metas e gastos
-
----
-
-## 🎯 Objetivo Principal
-
-Desenvolver uma **aplicação web gratuita e intuitiva** que permita:
-
-- ✔ **Cadastro de receitas e despesas (CRUD)**
-- ✔ **Estabelecimento de metas mensais** com acompanhamento visual
-- ✔ **Relatórios e gráficos acessíveis** para fácil interpretação
-- ✔ **Autenticação segura** com JWT e criptografia de senhas
-- ✔ **Interface acessível** para todos os perfis de usuário
+✅ Cadastro de receitas e despesas  
+✅ Relatórios e gráficos interativos  
+✅ Metas orçamentárias  
+✅ Autenticação de usuários  
 
 ---
 
-## 🔍 Diferenciais Competitivos
+## 📂 Estrutura do Projeto
 
-| Diferencial | Benefício |
-|------------|-----------|
-| **100% gratuito** | Sem bloqueios ou planos premium |
-| **Design acessível** | Ideal para usuários não técnicos |
-| **Notificações inteligentes** | Estímulo constante ao uso e controle |
-| **Privacidade garantida** | Armazenamento local e seguro |
-| **Código aberto** | Transparente e aberto a contribuições |
+```
 
----
+finance-guard/
+├── firebase/          # Cloud Functions e configs Firebase
+├── src/               # Código-fonte Next.js
+├── backend/           # Scripts e lógicas adicionais de backend
+├── docs/              # Documentação do projeto
+├── .firebaserc
+├── firebase.json
+├── next.config.ts
+├── tailwind.config.ts
+└── package.json
 
-## 📊 Funcionalidades-Chave
-
-### 1. Comunicação Eficiente com o Usuário
-
-- **Notificações inteligentes**:
-  - 💡 *"Você gastou 80% do orçamento em 'Alimentação' este mês"*
-  - 🎯 *"Faltam R$ 200 para atingir sua meta de economia!"*
-- **Relatórios visuais**:
-  - Gráficos de pizza (por categoria)
-  - Linha do tempo de evolução mensal
-- **Linguagem simples e direta**:
-  - Sem termos técnicos confusos, como "passivo" ou "fluxo de caixa"
-
-### 2. Segurança Implementada
-
-- **Autenticação robusta**:
-  - JWT com expiração
-  - Senhas criptografadas com BCrypt
-- **Boas práticas de segurança**:
-  - CORS restrito
-  - CSRF desabilitado para APIs REST
-
-### 3. Interface Inclusiva
-
-- **Modo claro e escuro**
-- **Ícones ilustrativos** por categoria:
-  - 🍔 Alimentação, 🏠 Moradia, ⚡ Energia, etc.
-- **Tutorial interativo** na primeira utilização
+````
 
 ---
 
-## 🚀 Possibilidade de Escalabilidade
+## ⚙️ Instalação e Execução Local
 
-O sistema pode evoluir para:
+### Pré-requisitos:
 
-- **Versão para pequenas empresas**:
-  - Controle de gastos por setor
-  - Relatórios para tomada de decisão
-- **Recursos premium opcionais**:
-  - Consultoria financeira integrada
-  - Relatórios fiscais automatizados
+- Node.js v18+
+- NPM ou Yarn
+- Conta no Firebase + Projeto criado
+- **Firebase CLI** instalado globalmente:
 
----
-
-## 🛠 Stack Tecnológica
-
-| Camada       | Tecnologias                                               |
-|--------------|-----------------------------------------------------------|
-| **Front-end** | React + TypeScript + Tailwind CSS + Chart.js             |
-| **Back-end**  | Spring Boot + JPA/Hibernate + PostgreSQL + Spring Security |
-| **Infraestrutura** | Docker (PostgreSQL), Vercel (Front), Render (Back) |
-| **Comunicação** | Axios (HTTP), Swagger (Docs), Notificações futuras via Email/SMS |
+```bash
+npm install -g firebase-tools
+````
 
 ---
 
-## 🌐 Público-Alvo
+### 1. Clone o Projeto:
 
-- Pessoas físicas que desejam organizar seu orçamento pessoal
-- Microempreendedores que buscam controle financeiro básico
-- Estudantes e jovens interessados em educação financeira
-
----
-
-## 📦 Em Desenvolvimento
-
-O projeto ainda está em fase ativa de desenvolvimento.  
-Toda contribuição é bem-vinda! 💡
-
-Sinta-se à vontade para abrir **issues**, sugerir **melhorias** ou enviar um **pull request**. 🚀
+```bash
+git clone https://github.com/SAUL-ALVES/finance-guard_.git
+cd finance-guard
+```
 
 ---
 
-> Desenvolvido com 💙 por Saul Alves
+### 2. Instale as Dependências:
+
+```bash
+npm install
+```
+
+---
+
+### 3. Configuração do Firebase:
+
+Login no Firebase:
+
+```bash
+firebase login
+```
+
+Vincular ao seu projeto Firebase:
+
+```bash
+firebase use --add
+```
+
+Se necessário, configure variáveis de ambiente para as Cloud Functions:
+
+```bash
+firebase functions:config:set jwt.secret="sua_chave_secreta"
+```
+
+---
+
+### 4. Rodando o Front-end (Next.js):
+
+```bash
+npm run dev
+```
+
+> A aplicação estará disponível localmente em: [http://localhost:9002](http://localhost:9002)
+
+---
+
+### 5. Rodando a IA (Genkit):
+
+Se quiser testar o módulo AI localizado em `/src/ai/`:
+
+```bash
+npm run genkit:dev
+```
+
+Para modo watch:
+
+```bash
+npm run genkit:watch
+```
+
+---
+
+### 6. Deploy das Cloud Functions (Firebase Backend):
+
+```bash
+cd firebase
+firebase deploy --only functions
+```
+
+---
+
+### 7. Build para Produção:
+
+```bash
+npm run build
+npm start
+```
+
+---
+
+## 📝 Tecnologias Principais
+
+* Next.js + TypeScript
+* Tailwind CSS
+* Firebase (Auth, Firestore, Hosting, Functions)
+* React Query, Zod, Radix UI, Recharts
+* Genkit AI (Google AI API)
+
+---
+
+## ✅ Funcionalidades Futuras
+
+* Exportação de relatórios (CSV/PDF)
+* Notificações por e-mail
+* Modo offline com sincronização
 
