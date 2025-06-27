@@ -1,3 +1,5 @@
+// Em: src/components/transactions/TransactionForm.tsx
+
 'use client';
 
 import React from 'react';
@@ -13,13 +15,9 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { cn, formatDate } from '@/lib/utils';
 import { Icons } from '@/components/icons';
-import { CATEGORIES, CATEGORY_KEYS, getCategory } from '@/config/categories';
-import type { TransactionFormData, CategoryKey } from '@/types';
+import { CATEGORIES, CATEGORY_KEYS } from '@/config/categories';
 import { useTransactions } from '@/contexts/TransactionsContext';
 import { useToast } from '@/hooks/use-toast';
-import { suggestTransactionCategory } from '@/ai/flows/suggest-transaction-category';
-import { useMutation } from '@tanstack/react-query';
-
 
 const transactionFormSchema = z.object({
   description: z.string().min(1, "Descrição é obrigatória."),
@@ -28,6 +26,8 @@ const transactionFormSchema = z.object({
   type: z.enum(['income', 'expense'], { required_error: "Tipo é obrigatório." }),
   category: z.enum(CATEGORY_KEYS, { required_error: "Categoria é obrigatória." }),
 });
+
+type TransactionFormData = z.infer<typeof transactionFormSchema>;
 
 interface TransactionFormProps {
   onSuccess?: () => void;
@@ -44,42 +44,12 @@ export function TransactionForm({ onSuccess }: TransactionFormProps) {
       amount: 0,
       date: new Date(),
       type: 'expense',
-      category: undefined, // Let user pick or use suggestion
     },
   });
-
-  const { mutate: suggestCategory, isPending: isSuggestingCategory } = useMutation({
-    mutationFn: async (description: string) => {
-      return suggestTransactionCategory({ description });
-    },
-    onSuccess: (data) => {
-      if (data?.category) {
-        const validCategoryKey = CATEGORY_KEYS.find(key => key === data.category.toUpperCase());
-        if (validCategoryKey) {
-          form.setValue('category', validCategoryKey);
-          toast({ title: "Categoria Sugerida", description: `Categoria: ${getCategory(validCategoryKey)?.label}. Razão: ${data.reason}` });
-        } else {
-          form.setValue('category', 'OUTROS'); // Fallback
-           toast({ variant: "default", title: "Sugestão Aplicada Parcialmente", description: `Categoria sugerida "${data.category}" não é padrão, usando "Outros". Razão: ${data.reason}` });
-        }
-      }
-    },
-    onError: (error: Error) => {
-      toast({ variant: "destructive", title: "Falha na Sugestão", description: error.message });
-    }
-  });
-
-  const handleSuggestCategory = () => {
-    const description = form.getValues('description');
-    if (description && description.trim() !== '') {
-      suggestCategory(description);
-    } else {
-      toast({ variant: "destructive", title: "Descrição Ausente", description: "Por favor, insira uma descrição para obter uma sugestão de categoria." });
-    }
-  };
 
   function onSubmit(data: TransactionFormData) {
-    addTransaction(data);
+    // Este erro desaparecerá porque o tipo de 'data' agora bate com o esperado.
+    addTransaction(data); 
     toast({
       title: "Transação Adicionada!",
       description: `${data.type === 'income' ? 'Receita' : 'Despesa'} de ${data.description} adicionada com sucesso.`,
@@ -92,6 +62,7 @@ export function TransactionForm({ onSuccess }: TransactionFormProps) {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 md:space-y-6 p-1">
+        {/* ... JSX ... */}
         <FormField
           control={form.control}
           name="description"
@@ -105,7 +76,6 @@ export function TransactionForm({ onSuccess }: TransactionFormProps) {
             </FormItem>
           )}
         />
-
         <FormField
           control={form.control}
           name="amount"
@@ -119,7 +89,6 @@ export function TransactionForm({ onSuccess }: TransactionFormProps) {
             </FormItem>
           )}
         />
-
         <FormField
           control={form.control}
           name="date"
@@ -161,7 +130,6 @@ export function TransactionForm({ onSuccess }: TransactionFormProps) {
             </FormItem>
           )}
         />
-        
         <FormField
           control={form.control}
           name="type"
@@ -192,14 +160,12 @@ export function TransactionForm({ onSuccess }: TransactionFormProps) {
             </FormItem>
           )}
         />
-
         <FormField
           control={form.control}
           name="category"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Categoria</FormLabel>
-              <div className="flex items-center gap-2">
                 <Select onValueChange={field.onChange} value={field.value}>
                   <FormControl>
                     <SelectTrigger>
@@ -208,6 +174,7 @@ export function TransactionForm({ onSuccess }: TransactionFormProps) {
                   </FormControl>
                   <SelectContent>
                     {CATEGORY_KEYS.map((key) => {
+                      // Este erro desaparecerá porque 'key' agora tem o tipo correto.
                       const category = CATEGORIES[key];
                       return (
                         <SelectItem key={key} value={key}>
@@ -220,23 +187,11 @@ export function TransactionForm({ onSuccess }: TransactionFormProps) {
                     })}
                   </SelectContent>
                 </Select>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="icon"
-                  onClick={handleSuggestCategory}
-                  disabled={isSuggestingCategory}
-                  title="Sugerir Categoria (IA)"
-                >
-                  {isSuggestingCategory ? <Icons.Loader2 className="h-4 w-4 animate-spin" /> : <Icons.Lightbulb className="h-4 w-4" />}
-                </Button>
-              </div>
               <FormMessage />
             </FormItem>
           )}
         />
-
-        <Button type="submit" className="w-full" disabled={form.formState.isSubmitting || isSuggestingCategory}>
+        <Button type="submit" className="w-full" disabled={form.formState.isSubmitting}>
           {form.formState.isSubmitting ? <Icons.Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
           Adicionar Transação
         </Button>

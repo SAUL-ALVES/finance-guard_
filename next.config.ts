@@ -1,7 +1,8 @@
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
-  // Configurações existentes
+  
+  devIndicators: false,
   typescript: {
     ignoreBuildErrors: true,
   },
