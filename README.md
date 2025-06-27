@@ -58,69 +58,13 @@ npm install
 
 ---
 
-### 3. Configuração do Firebase:
-
-Login no Firebase:
-
-```bash
-firebase login
-```
-
-Vincular ao seu projeto Firebase:
-
-```bash
-firebase use --add
-```
-
-Se necessário, configure variáveis de ambiente para as Cloud Functions:
-
-```bash
-firebase functions:config:set jwt.secret="sua_chave_secreta"
-```
-
----
-
-### 4. Rodando o Front-end (Next.js):
+### 3. Rodando o Front-end (Next.js):
 
 ```bash
 npm run dev
 ```
 
 > A aplicação estará disponível localmente em: [http://localhost:9002](http://localhost:9002)
-
----
-
-### 5. Rodando a IA (Genkit):
-
-Se quiser testar o módulo AI localizado em `/src/ai/`:
-
-```bash
-npm run genkit:dev
-```
-
-Para modo watch:
-
-```bash
-npm run genkit:watch
-```
-
----
-
-### 6. Deploy das Cloud Functions (Firebase Backend):
-
-```bash
-cd firebase
-firebase deploy --only functions
-```
-
----
-
-### 7. Build para Produção:
-
-```bash
-npm run build
-npm start
-```
 
 ---
 
