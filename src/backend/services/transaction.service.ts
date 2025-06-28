@@ -8,7 +8,7 @@ interface Transaction {
   type: 'income' | 'expense';
   date: string;
   category: string;
-  userId: string; // Para associar ao usuário logado
+  userId: string; 
 }
 
 export class TransactionService {

@@ -48,7 +48,7 @@ export function TransactionForm({ onSuccess }: TransactionFormProps) {
   });
 
   function onSubmit(data: TransactionFormData) {
-    // Este erro desaparecerá porque o tipo de 'data' agora bate com o esperado.
+    
     addTransaction(data); 
     toast({
       title: "Transação Adicionada!",
@@ -174,7 +174,7 @@ export function TransactionForm({ onSuccess }: TransactionFormProps) {
                   </FormControl>
                   <SelectContent>
                     {CATEGORY_KEYS.map((key) => {
-                      // Este erro desaparecerá porque 'key' agora tem o tipo correto.
+                     
                       const category = CATEGORIES[key];
                       return (
                         <SelectItem key={key} value={key}>

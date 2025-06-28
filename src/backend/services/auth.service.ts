@@ -7,15 +7,15 @@ interface User {
   email: string;
   passwordHash: string;
   name: string;
-  token?: string; // Adicionado para gerenciamento de sessão
+  token?: string; 
 }
 
 export class AuthService {
   private static readonly SALT_ROUNDS = 10;
-  private static readonly TOKEN_SECRET = 'your-secret-key'; // Em produção, use variáveis de ambiente
+  private static readonly TOKEN_SECRET = 'your-secret-key'; 
 
   static async register(email: string, password: string, name: string): Promise<User> {
-    const users = await DBService.read<User>('users'); // Adicionado await
+    const users = await DBService.read<User>('users'); 
     
     if (users.some(u => u.email === email)) {
       throw new Error('Email já cadastrado.');
@@ -27,16 +27,16 @@ export class AuthService {
       email,
       passwordHash,
       name,
-      token: this.generateToken(email) // Gera token ao registrar
+      token: this.generateToken(email) 
     };
 
     users.push(newUser);
-    await DBService.write('users', users); // Adicionado await
+    await DBService.write('users', users); 
     return newUser;
   }
 
   static async login(email: string, password: string): Promise<User> {
-    const users = await DBService.read<User>('users'); // Adicionado await
+    const users = await DBService.read<User>('users'); 
     const user = users.find(u => u.email === email);
 
     if (!user || !(await bcrypt.compare(password, user.passwordHash))) {
@@ -53,26 +53,26 @@ export class AuthService {
     const updatedUsers = users.map(u => 
       u.id === user.id ? updatedUser : u
     );
-    await DBService.write('users', updatedUsers); // Adicionado await
+    await DBService.write('users', updatedUsers); 
 
     return updatedUser;
   }
 
   static async checkAuth(token: string): Promise<boolean> {
-    const users = await DBService.read<User>('users'); // Adicionado await
+    const users = await DBService.read<User>('users'); 
     return users.some(u => u.token === token);
   }
 
   static async logout(token: string): Promise<void> {
-    const users = await DBService.read<User>('users'); // Adicionado await
+    const users = await DBService.read<User>('users'); 
     const updatedUsers = users.map(u => 
       u.token === token ? { ...u, token: undefined } : u
     );
-    await DBService.write('users', updatedUsers); // Adicionado await
+    await DBService.write('users', updatedUsers);
   }
 
   private static generateToken(email: string): string {
-    // Simples implementação - em produção use JWT ou similar
+    
     return Buffer.from(`${email}:${Date.now()}`).toString('base64');
   }
 }

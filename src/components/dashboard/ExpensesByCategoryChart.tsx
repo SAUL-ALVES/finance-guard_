@@ -15,7 +15,7 @@ const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, per
   const x = cx + radius * Math.cos(-midAngle * RADIAN);
   const y = cy + radius * Math.sin(-midAngle * RADIAN);
 
-  if (percent < 0.05) return null; // Don't render label for very small slices
+  if (percent < 0.05) return null; 
 
   return (
     <text x={x} y={y} fill="white" textAnchor={x > cx ? 'start' : 'end'} dominantBaseline="central" className="text-xs font-medium">
@@ -58,13 +58,13 @@ export function ExpensesByCategoryChart() {
     setIsClient(true);
   }, []);
 
-  // Determine outerRadius based on screen size
+  
   const outerRadius = useMemo(() => {
-    if (!isClient) return 120; // Default for server render
-    if (window.innerWidth < 768) { // Adjust breakpoint as needed for mobile
+    if (!isClient) return 120; 
+    if (window.innerWidth < 768) { 
       return 90;
     }
-    return 120; // Default for larger screens
+    return 120; 
   }, [isClient]);
 
   if (loading) {

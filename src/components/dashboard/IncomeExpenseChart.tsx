@@ -21,16 +21,16 @@ export function IncomeExpenseChart() {
     
     const dataByMonth: { [key: string]: { Receitas: number; Despesas: number } } = {};
 
-    // 1. Primeiro, agregamos todas as transações que temos
+    
     transactions.forEach(t => {
       const monthKey = format(startOfMonth(new Date(t.date)), 'MMM/yy', { locale: ptBR });
       
-      // Inicializa o mês se ainda não existir
+      
       if (!dataByMonth[monthKey]) {
         dataByMonth[monthKey] = { Receitas: 0, Despesas: 0 };
       }
 
-      // Soma na categoria correta
+      
       if (t.type === 'income') {
         dataByMonth[monthKey].Receitas += t.amount;
       } else {
@@ -38,17 +38,17 @@ export function IncomeExpenseChart() {
       }
     });
 
-    // 2. Em seguida, geramos as chaves dos últimos 6 meses NA ORDEM CORRETA
+    
     const monthKeys: string[] = [];
     const today = new Date();
-    // Loop de 5 para 0 para ir do mais antigo para o mais recente (ordem cronológica)
+    
     for (let i = numMonths - 1; i >= 0; i--) {
       const monthDate = subMonths(today, i);
       const monthKey = format(startOfMonth(monthDate), 'MMM/yy', { locale: ptBR });
       monthKeys.push(monthKey);
     }
     
-    // 3. Por fim, mapeamos as chaves ordenadas para os dados agregados
+    
     return monthKeys.map(key => ({
       name: key,
       Receitas: dataByMonth[key]?.Receitas || 0,
@@ -71,7 +71,7 @@ export function IncomeExpenseChart() {
     );
   }
   
-  // Condicional para quando não há transações
+  
   if (transactions.length === 0) {
       return (
         <Card className="shadow-lg col-span-1 md:col-span-2">

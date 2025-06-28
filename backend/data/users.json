@@ -1,3 +1,9 @@
 [
-  
+  {
+    "id": "1751058989087",
+    "email": "saulalves55@gmail.com",
+    "passwordHash": "$2b$10$UF4HXdSKpdBfM.v5n6JNjutIdscjbo3P36AQwRWtJ3USasCDqXmfu",
+    "name": "saul",
+    "token": "c2F1bGFsdmVzNTVAZ21haWwuY29tOjE3NTEwNTg5OTMxMTA="
+  }
 ]

@@ -14,7 +14,7 @@ export default function RegisterPage() {
     e.preventDefault();
     try {
       await AuthService.register(email, password, name);
-      router.push('/login'); // Redireciona para login após cadastro
+      router.push('/login'); 
     } catch (err) {
         const error = err as Error;
         setError(error.message);
